@@ -16,7 +16,6 @@ from .codes import parse_codes
 SCHEMA = 1
 ROOT = Path(__file__).resolve().parents[2]
 DATA = ROOT / "data"
-DICT_SOURCE = ROOT / "sources" / "mcc-dictionary-oleksios.json"
 
 
 def write_json(path: Path, obj) -> None:
@@ -49,19 +48,6 @@ def validate_bank(path: Path) -> dict:
     return bank
 
 
-def build_dictionary() -> Path:
-    src = json.loads(DICT_SOURCE.read_text(encoding="utf-8"))
-    out = {}
-    for e in src:
-        title = e.get("shortDescription", {}).get("ru", "").strip()
-        full = e.get("fullDescription", {}).get("ru", "").strip()
-        if title or full:
-            out[e["mcc"]] = {"title": title or full, "description": full if full != title else ""}
-    path = DATA / "mcc_ru.json"
-    write_json(path, dict(sorted(out.items())))
-    return path
-
-
 def _ordered_bank_files() -> list[Path]:
     """Порядок из текущего index.json (его можно править руками), новые файлы — в конец."""
     existing = sorted((DATA / "banks").glob("*.json"))
@@ -79,12 +65,10 @@ def main() -> None:
             raise SystemExit(f"{path.name}: id {bank['id']!r} уже занят другим файлом")
         ids.add(bank["id"])
         files.append(f"banks/{path.name}")
-    dictionary = build_dictionary()
     write_json(DATA / "index.json", {
         "schema": SCHEMA,
         "generated": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "banks": files,
-        "dictionary": dictionary.name,
     })
     print(f"index.json: {', '.join(files)}", file=sys.stderr)
 

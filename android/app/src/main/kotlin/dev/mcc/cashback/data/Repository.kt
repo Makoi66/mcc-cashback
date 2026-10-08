@@ -4,8 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
 import java.io.File
 import java.io.IOException
 import java.net.HttpURLConnection
@@ -23,23 +21,22 @@ class Repository(private val context: Context) {
     private val syncedDir = File(context.filesDir, "data")
 
     suspend fun load(): Dataset = withContext(Dispatchers.IO) {
-        val bundled = bundledDictionary()
         if (File(syncedDir, INDEX).exists()) {
             try {
                 val read = { path: String -> File(syncedDir, path).readBytes() }
-                return@withContext withLogos(parseDataset(Dataset.Origin.SYNCED, bundled, read), read)
+                return@withContext withLogos(parseDataset(Dataset.Origin.SYNCED, read), read)
             } catch (e: Exception) {
                 // Битые локальные файлы не должны оставлять пустой экран — откатываемся на снимок.
                 syncedDir.deleteRecursively()
             }
         }
-        loadBundled(bundled)
+        loadBundled()
     }
 
     suspend fun sync(baseUrl: String, current: Dataset): SyncResult = withContext(Dispatchers.IO) {
         val base = baseUrl.trim().let { if (it.endsWith("/")) it else "$it/" }
         val fetched = linkedMapOf<String, ByteArray>()
-        val parsed = parseDataset(Dataset.Origin.SYNCED, bundledDictionary()) { path ->
+        val parsed = parseDataset(Dataset.Origin.SYNCED) { path ->
             download(base + path).also { fetched[path] = it }
         }
         // Логотип не критичен: если не скачался, банк просто будет без него.
@@ -66,12 +63,12 @@ class Repository(private val context: Context) {
     /** Забыть Sync и вернуться к данным, вшитым в APK. */
     suspend fun resetToBundled(): Dataset = withContext(Dispatchers.IO) {
         syncedDir.deleteRecursively()
-        loadBundled(bundledDictionary())
+        loadBundled()
     }
 
-    private fun loadBundled(dictionary: Map<String, MccInfo>): Dataset {
+    private fun loadBundled(): Dataset {
         val read = { path: String -> readAsset(path) }
-        return withLogos(parseDataset(Dataset.Origin.BUNDLED, dictionary, read), read)
+        return withLogos(parseDataset(Dataset.Origin.BUNDLED, read), read)
     }
 
     private fun withLogos(dataset: Dataset, read: (String) -> ByteArray?): Dataset {
@@ -85,9 +82,6 @@ class Repository(private val context: Context) {
 
     private fun readAsset(path: String): ByteArray =
         context.assets.open("data/$path").use { it.readBytes() }
-
-    private fun bundledDictionary(): Map<String, MccInfo> =
-        runCatching { parseDictionary(readAsset(DICTIONARY)) }.getOrDefault(emptyMap())
 
     private fun download(url: String): ByteArray {
         // raw.githubusercontent.com кэширует ~5 минут; параметр в URL даёт свежую копию сразу после push.
@@ -106,7 +100,6 @@ class Repository(private val context: Context) {
 
     companion object {
         const val INDEX = "index.json"
-        const val DICTIONARY = "mcc_ru.json"
     }
 }
 
@@ -116,7 +109,6 @@ class Repository(private val context: Context) {
  */
 fun parseDataset(
     origin: Dataset.Origin,
-    fallbackDictionary: Map<String, MccInfo>,
     read: (String) -> ByteArray,
 ): Dataset {
     val index = parseFile(Repository.INDEX) { DataJson.decodeFromString(IndexFile.serializer(), read(Repository.INDEX).decodeToString()) }
@@ -131,15 +123,8 @@ fun parseDataset(
     banks.groupBy { it.id }.filterValues { it.size > 1 }.keys.firstOrNull()?.let {
         throw DataException("id «$it» повторяется у нескольких банков")
     }
-    val dictionary = index.dictionary?.let { path ->
-        checkPath(path)
-        parseFile(path) { parseDictionary(read(path)) }
-    } ?: fallbackDictionary
-    return Dataset(index, banks, dictionary, origin)
+    return Dataset(index, banks, origin)
 }
-
-private fun parseDictionary(bytes: ByteArray): Map<String, MccInfo> =
-    DataJson.decodeFromString(MapSerializer(String.serializer(), MccInfo.serializer()), bytes.decodeToString())
 
 private fun <T> parseFile(path: String, block: () -> T): T =
     try {

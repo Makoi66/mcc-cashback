@@ -73,7 +73,7 @@ class LookupTest {
             "index.json" to """{"schema":1,"banks":["../evil.json"]}""",
         )
         assertThrows(DataException::class.java) {
-            parseDataset(Dataset.Origin.SYNCED, emptyMap()) { files.getValue(it).encodeToByteArray() }
+            parseDataset(Dataset.Origin.SYNCED) { files.getValue(it).encodeToByteArray() }
         }
         val dup = mapOf(
             "index.json" to """{"schema":1,"banks":["a.json","b.json"]}""",
@@ -81,7 +81,7 @@ class LookupTest {
             "b.json" to """{"schema":1,"id":"x","name":"B"}""",
         )
         assertThrows(DataException::class.java) {
-            parseDataset(Dataset.Origin.SYNCED, emptyMap()) { dup.getValue(it).encodeToByteArray() }
+            parseDataset(Dataset.Origin.SYNCED) { dup.getValue(it).encodeToByteArray() }
         }
     }
 
@@ -89,13 +89,11 @@ class LookupTest {
     @Test
     fun realDataParses() {
         val dir = File("../../data")
-        val ds = parseDataset(Dataset.Origin.BUNDLED, emptyMap()) { File(dir, it).readBytes() }
+        val ds = parseDataset(Dataset.Origin.BUNDLED) { File(dir, it).readBytes() }
         assertTrue(ds.banks.isNotEmpty())
-        assertTrue(ds.dictionary.size > 500)
         val lookup = Lookup(ds)
         val tbank = lookup.lookup(5411, emptySet()).first { it.bank.id == "tbank" }
         assertEquals("Супермаркеты", (tbank.verdict as Verdict.InCategories).matches.single().category.name)
-        assertEquals("Продукты", lookup.describe(5411)?.title)
         assertEquals(listOf("tbank", "alfa", "vtb", "ozon"), ds.banks.map { it.id })
         ds.banks.forEach { bank -> assertTrue(bank.id, File(dir, bank.logo!!).isFile) }
 

@@ -85,10 +85,6 @@ class BankIndex(val bank: BankFile) {
 
 class Lookup(dataset: Dataset) {
     private val indexes = dataset.banks.map(::BankIndex)
-    private val dictionary = dataset.dictionary
-
-    fun describe(code: Int): MccInfo? = dictionary[mcc(code)]
-
     /** Сначала банки, где код попал в категорию, потом «вне категорий», в конце исключения. */
     fun lookup(code: Int, disabled: Set<String>): List<BankResult> =
         indexes.filter { it.bank.id !in disabled }

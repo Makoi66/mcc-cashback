@@ -1,11 +1,10 @@
 {
  "schema": 1,
- "generated": "2026-10-08T21:16:54Z",
+ "generated": "2026-10-08T21:27:43Z",
  "banks": [
   "banks/tbank.json",
   "banks/alfa.json",
   "banks/vtb.json",
   "banks/ozon.json"
- ],
- "dictionary": "mcc_ru.json"
+ ]
 }

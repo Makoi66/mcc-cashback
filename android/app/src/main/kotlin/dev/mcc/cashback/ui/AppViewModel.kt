@@ -7,7 +7,6 @@ import dev.mcc.cashback.data.BankChange
 import dev.mcc.cashback.data.BankResult
 import dev.mcc.cashback.data.Dataset
 import dev.mcc.cashback.data.Lookup
-import dev.mcc.cashback.data.MccInfo
 import dev.mcc.cashback.data.Prefs
 import dev.mcc.cashback.data.Repository
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +19,6 @@ data class UiState(
     val dataset: Dataset? = null,
     val loadError: String? = null,
     val input: String = "",
-    val info: MccInfo? = null,
     val results: List<BankResult> = emptyList(),
     val recent: List<String> = emptyList(),
     val disabled: Set<String> = emptySet(),
@@ -118,9 +116,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val code = s.input.takeIf { it.length == 4 }?.toInt()
         _state.update {
             if (l == null || code == null) {
-                it.copy(info = null, results = emptyList())
+                it.copy(results = emptyList())
             } else {
-                it.copy(info = l.describe(code), results = l.lookup(code, s.disabled))
+                it.copy(results = l.lookup(code, s.disabled))
             }
         }
     }

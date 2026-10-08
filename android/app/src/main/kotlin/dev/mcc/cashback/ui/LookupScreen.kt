@@ -162,11 +162,7 @@ private fun Recent(state: UiState, vm: AppViewModel) {
             }
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 state.recent.forEach { code ->
-                    val title = state.dataset?.dictionary?.get(code)?.title
-                    SuggestionChip(
-                        onClick = { vm.onInput(code) },
-                        label = { Text(if (title != null) "$code · $title" else code, maxLines = 1) },
-                    )
+                    SuggestionChip(onClick = { vm.onInput(code) }, label = { Text(code) })
                 }
             }
         }
@@ -179,17 +175,6 @@ private fun Results(state: UiState) {
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-        item {
-            Column(Modifier.padding(bottom = 6.dp)) {
-                Text(
-                    state.info?.title ?: "Нет в справочнике MCC",
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                state.info?.description?.takeIf { it.isNotBlank() }?.let {
-                    Text(it, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-            }
-        }
         if (state.results.isEmpty()) {
             item { Text("Все банки выключены на вкладке «Банки».", color = MaterialTheme.colorScheme.onSurfaceVariant) }
         }

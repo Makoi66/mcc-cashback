@@ -19,7 +19,6 @@ data class IndexFile(
     val generated: String? = null,
     /** Пути к файлам банков относительно data/, порядок = порядок в приложении. */
     val banks: List<String>,
-    val dictionary: String? = null,
 )
 
 @Serializable
@@ -60,14 +59,10 @@ data class CategoryDto(
     @SerialName("mcc_notes") val mccNotes: Map<String, String> = emptyMap(),
 )
 
-@Serializable
-data class MccInfo(val title: String, val description: String = "")
-
 /** Всё, что загружено и показывается сейчас. */
 data class Dataset(
     val index: IndexFile,
     val banks: List<BankFile>,
-    val dictionary: Map<String, MccInfo>,
     val origin: Origin,
     /** Логотипы по id банка; банка без логотипа (или с битым файлом) здесь нет. */
     val logos: Map<String, Bitmap> = emptyMap(),

@@ -4,7 +4,7 @@ Android-приложение: вводишь MCC (4 цифры) — видишь
 
 ```
 data/       JSON, который приложение скачивает по Sync (формат — data/README.md)
-sources/    исходные PDF банков и справочник MCC
+sources/    исходные PDF банков
 pipeline/   Python: проверка JSON против PDF (check) и сборка index.json (publish)
 android/    приложение (Kotlin + Compose)
 ```
@@ -28,7 +28,5 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```sh
 cd pipeline     # нужен только python3 и pdftotext (poppler)
 python3 -m mcc_tools.check ../data/banks/vtb.json ../sources/vtb/*.pdf   # коды из JSON есть в PDF?
-python3 -m mcc_tools.publish     # проверить data/banks/*.json, пересобрать index.json и словарь
+python3 -m mcc_tools.publish     # проверить data/banks/*.json, пересобрать index.json
 ```
-
-Справочник MCC — [Oleksios/Merchant-Category-Codes](https://github.com/Oleksios/Merchant-Category-Codes) (MIT).

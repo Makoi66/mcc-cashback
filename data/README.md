@@ -17,12 +17,11 @@
 {
  "schema": 1,
  "generated": "2026-10-08T20:42:27Z",
- "banks": ["banks/tbank.json", "banks/sber.json"],
- "dictionary": "mcc_ru.json"
+ "banks": ["banks/tbank.json", "banks/sber.json"]
 }
 ```
 
-`generated` — только для информации. `dictionary` — справочник описаний MCC (`{"5411": {"title": "Продукты", "description": "…"}}`).
+`generated` — только для информации.
 
 ## banks/<id>.json
 
