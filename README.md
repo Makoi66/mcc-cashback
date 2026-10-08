@@ -2,6 +2,8 @@
 
 Android-приложение: вводишь MCC (4 цифры) — видишь, в какую категорию кешбэка он попадает в каждом банке.
 
+Скачать APK: [последний релиз](https://github.com/Makoi66/mcc-cashback/releases/latest).
+
 ```
 data/       JSON, который приложение скачивает по Sync (формат — data/README.md)
 sources/    исходные PDF банков
