@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- карта -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M32,38h44a5,5 0,0 1,5 5v26a5,5 0,0 1,-5 5h-44a5,5 0,0 1,-5 -5v-26a5,5 0,0 1,5 -5z" />
+    <!-- магнитная полоса -->
+    <path
+        android:fillColor="#1F3A8A"
+        android:pathData="M27,45h54v7h-54z" />
+    <!-- строка с цифрами MCC -->
+    <path
+        android:fillColor="#93A4D6"
+        android:pathData="M33,60h5v4h-5zM40,60h5v4h-5zM47,60h5v4h-5zM54,60h5v4h-5z" />
+    <!-- кружок кешбэка -->
+    <path
+        android:fillColor="#FFC83D"
+        android:pathData="M72,66m-11,0a11,11 0,1 1,22 0a11,11 0,1 1,-22 0" />
+    <path
+        android:fillColor="#1F3A8A"
+        android:pathData="M67.2,72.2l9.6,-12.4l1.6,1.2l-9.6,12.4zM68.5,62.5m-2.2,0a2.2,2.2 0,1 1,4.4 0a2.2,2.2 0,1 1,-4.4 0M75.5,69.5m-2.2,0a2.2,2.2 0,1 1,4.4 0a2.2,2.2 0,1 1,-4.4 0" />
+</vector>
